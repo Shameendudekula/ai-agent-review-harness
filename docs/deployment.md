@@ -7,7 +7,7 @@
 | Frontend | https://review-harness-web.onrender.com |
 | API | https://review-harness-api.onrender.com (OpenAPI docs at `/docs`) |
 
-Verification on 2026-10-29 (commits `706718c`–`cc1901c`):
+Verification on 2026-10-29 (commits `e267c81`–`11e7fbb`):
 - `/health` returned 200 and `/health/ready` reported the database as reachable.
 - CORS allowed the frontend origin and refused a foreign origin.
 - The frontend returned 200, deep links worked, and the security headers were present.
@@ -18,7 +18,7 @@ Verification on 2026-10-29 (commits `706718c`–`cc1901c`):
 
 **First-deploy issue (resolved):** the first API deploy failed because `DATABASE_URL`
 in Render held the local `localhost` value. It was replaced with the Neon URL. Since
-`706718c`, the app rejects a localhost database URL at startup when
+`e267c81`, the app rejects a localhost database URL at startup when
 `APP_ENV=production`.
 
 ## 1. Chosen hosting (checked 2026-10-29)
