@@ -10,7 +10,7 @@ AI Agent Review Harness is an independent portfolio project exploring how struct
 
 The application is designed to expose agent plans, assumptions, proposed actions, review decisions, execution outcomes, and audit history.
 
-**Project status:** Backend foundation in progress (FastAPI app with a tested health endpoint). No workflow features are implemented yet.
+**Project status:** The backend workflow is implemented and tested locally: tasks, deterministic agent planning, risk-based review, authorization, restricted mock-tool execution, verification, and an audit trail. The frontend, evaluation, and deployment are not finished yet. See [Progress](docs/progress.md).
 
 This repository does not yet represent a completed or deployed application.
 
@@ -92,46 +92,62 @@ The backend, frontend, and deployment files will be introduced as their modules 
 - [Security Design](docs/security.md)
 - [Evaluation Plan](docs/evaluation-plan.md)
 - [Deployment Plan](docs/deployment.md)
+- [API Reference](docs/api.md)
+- [Progress Tracker](docs/progress.md)
 
 ## Development Status
 
 | Module | Status |
 |---|---|
 | Project setup and design | Done |
-| Backend foundation | In progress |
-| Task management API | Not started |
-| Agent planning engine | Not started |
-| Human review and policy engine | Not started |
-| Safe execution and audit history | Not started |
+| Backend foundation | Done |
+| Task management API | Done |
+| Agent planning engine | Done (deterministic mock) |
+| Human review and policy engine | Done |
+| Safe execution and audit history | Done |
 | Frontend | Not started |
-| Testing and security verification | Not started |
-| LLM integration | Not started |
+| Testing and security verification | In progress |
+| LLM integration | Adapter implemented and unit-tested; no live call verified |
 | Evaluation | Not started |
 | Deployment and CI/CD | Not started |
 | Portfolio documentation and demonstration | Not started |
 
 ## Local Development
 
-Requires Python 3.11. From the repository root:
+Requirements: Python 3.11 and PostgreSQL (tested with PostgreSQL 18 installed through
+Homebrew; Docker is not required).
 
 ```bash
 python3.11 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-dev.txt     # or requirements.txt for runtime only
+
+createdb review_harness                 # development database
+createdb review_harness_test            # used by the test suite
+cp .env.example .env                    # adjust DATABASE_URL if needed
+
+alembic upgrade head
 uvicorn backend.app.main:app --reload
 ```
 
-The API then serves `GET http://127.0.0.1:8000/health` and interactive docs at `/docs`.
+The API then serves `http://127.0.0.1:8000`, with interactive docs at `/docs`.
+The default planner is the deterministic mock, so no API key is needed.
 
-Frontend and database setup will be added when those components exist.
+Dependencies are locked with pip-tools: edit `requirements.in` or `requirements-dev.in`,
+then run `pip-compile` for the matching `.txt` file.
 
 ## Testing
 
 ```bash
-pytest
+pytest          # needs the review_harness_test database (override with TEST_DATABASE_URL)
+ruff check .
+mypy
 ```
 
-The suite currently contains a single health-endpoint test.
+The suite runs against real PostgreSQL. It covers lifecycle rules, risk and review
+policy, authorization (including forged-state and prompt-injection cases), tool
+execution and verification, the full review workflow in both modes, the audit trail,
+and error handling.
 
 ## Security
 
