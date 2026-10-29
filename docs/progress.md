@@ -17,7 +17,7 @@ were checked with the commands listed.
 | 10 | LLM integration | Adapter done; live call not verified | Anthropic adapter tested with a fake client; no live API call has been made (no key configured) |
 | 11 | Evaluation | Done (simulation) | Pre-registered plan (`a30b066`); 96 runs, reproducible; see evaluation-results.md. No human study |
 | 12 | Deployment and CI/CD | CI done; deployment prepared, **blocked on account setup** | `render.yaml` + Neon plan; production start command rehearsed locally. Needs Render and Neon accounts (docs/deployment.md §3) |
-| 13 | Portfolio delivery | Not started | |
+| 13 | Portfolio delivery | Done except live demo | README, portfolio.md (summary, CV bullets, demo script, interview notes), real screenshots. Live URLs pending deployment |
 
 ## Verification log
 

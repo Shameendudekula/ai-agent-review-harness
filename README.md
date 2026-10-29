@@ -1,209 +1,138 @@
 # AI Agent Review Harness
 
-**A human-in-the-loop review system for reliable AI-assisted software engineering.**
+**Make an AI agent's plan, assumptions, and risky actions reviewable before anything runs, and enforce the result in the backend.**
 
-## Overview
+[![CI](https://github.com/Shameendudekula/ai-agent-review-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/Shameendudekula/ai-agent-review-harness/actions/workflows/ci.yml)
 
-AI coding agents can make incorrect assumptions, propose risky changes, and interrupt developers unnecessarily.
+An independent portfolio project exploring human-in-the-loop oversight of AI agents:
+how a structured, risk-based review workflow compares with a simple approve-or-stop
+gate, and how to keep human approval separate from backend authorization.
 
-AI Agent Review Harness is an independent portfolio project exploring how structured human oversight can balance agent autonomy, task reliability, and review effort.
+> **Status (2026-10-29):** backend, frontend, tests, CI, and a simulated evaluation are
+> complete and verified locally and in CI. **Not yet deployed:** the hosting
+> configuration is ready, but needs account setup (see [Deployment](docs/deployment.md)).
+> No live URL exists yet.
 
-The application is designed to expose agent plans, assumptions, proposed actions, review decisions, execution outcomes, and audit history.
+![Structured review of a risky action](docs/screenshots/01-structured-review.png)
 
-**Project status:** The backend workflow is implemented and tested locally: tasks, deterministic agent planning, risk-based review, authorization, restricted mock-tool execution, verification, and an audit trail. A React frontend supports the full review workflow. Evaluation and deployment are not finished yet. See [Progress](docs/progress.md).
+## What it does
 
-This repository does not yet represent a completed or deployed application.
+1. A user creates a task. An agent proposes a plan with **steps, assumptions** (each
+   marked stated, inferred, or unsupported), **open questions**, and **proposed tool
+   actions** with success criteria.
+2. A rule-based **policy** rates each action LOW / MEDIUM / HIGH / FORBIDDEN, using
+   trusted tool metadata rather than the agent's own claim, and explains why it does or
+   does not need review.
+3. A reviewer **approves or rejects individual actions**, **requests a revision**, or
+   **answers the agent's questions**. Revised plans come back for review. Rejecting
+   one action does not cancel the task.
+4. Execution is a separate, explicit step. Immediately before each tool call the
+   backend **re-authorizes** the action from append-only decision records. A forged
+   status field, a client flag, or text saying "pre-approved" cannot authorize
+   anything.
+5. Only **allowlisted, simulated tools** run. Each result is **verified** against the
+   plan's success criteria.
+6. Every step is written to an **append-only audit trail**.
 
-## Goals
+A **baseline mode** (approve or stop the whole plan) runs on the same engine, which is
+what makes the comparison in the evaluation possible.
 
-- Make agent assumptions and proposed actions visible.
-- Support human approval, rejection, clarification, and revision.
-- Apply a transparent, rule-based review policy.
-- Restrict tool execution through backend authorization.
-- Maintain a persistent audit history.
-- Evaluate review workflows using repeatable tasks and predefined metrics.
-- Provide a public demonstration that works without a paid LLM API.
+## Highlights for reviewers
 
-## Planned Features
-
-1. Task creation and tracking.
-2. Deterministic mock-agent planning.
-3. Structured assumption and risk review.
-4. Human approval and clarification workflow.
-5. Restricted mock-tool execution.
-6. Persistent audit events.
-7. Evaluation dashboard.
-8. Optional real LLM integration.
-9. Automated tests and CI/CD.
-10. Public deployment.
-
-These features are planned and must not be assumed to be implemented until verified.
-
-## Technology Stack
-
-| Layer | Planned technology |
+| Area | What to look at |
 |---|---|
-| Frontend | React, TypeScript, Vite |
-| Backend | Python 3.11, FastAPI, Pydantic |
-| ORM | SQLAlchemy |
-| Migrations | Alembic |
-| Database | PostgreSQL |
-| Backend tests | pytest |
-| Version control | Git and GitHub |
-| Containers | Docker and Docker Compose |
-| CI/CD | GitHub Actions |
-| Frontend hosting | Vercel |
-| Backend and database hosting | Providers to be selected |
+| Architecture | Modular monolith; pure policy functions; three-phase planning that never holds a lock during a planner call → [architecture.md](docs/architecture.md) |
+| Security | Approval ≠ authorization; allowlist; append-only history enforced by DB triggers; prompt-injection handling and residual risks → [security.md](docs/security.md) |
+| Testing | 157 backend tests on real PostgreSQL, 15 frontend tests, 6 Playwright end-to-end journeys, all in CI |
+| Evaluation | Pre-registered, reproducible simulation (96 runs) with honest limits → [evaluation-results.md](docs/evaluation-results.md) |
 
-## Architecture
+## Technology
 
-The planned architecture is a modular monolith.
+| Layer | Stack |
+|---|---|
+| Backend | Python 3.11, FastAPI, Pydantic 2, SQLAlchemy 2, Alembic, PostgreSQL (psycopg 3) |
+| Agent | Deterministic mock planner (default); optional Anthropic adapter behind a provider-independent interface |
+| Frontend | React 19, TypeScript, Vite, Tailwind CSS, React Router |
+| Quality | pytest + HTTPX, Vitest + Testing Library, Playwright, ruff, mypy (strict), oxlint |
+| Delivery | GitHub Actions; Render + Neon deployment config (prepared) |
 
-The frontend communicates with the FastAPI backend. The backend coordinates task workflows, agent planning, review policies, restricted tool execution, persistence, and audit events.
-
-A deterministic mock agent will be implemented first. A provider-independent adapter will allow optional LLM integration later.
-
-See [Architecture](docs/architecture.md) for component responsibilities, lifecycle rules, database entities, and deployment topology.
-
-## Repository Structure
+## Repository layout
 
 ```text
-ai-agent-review-harness/
-├── backend/
-├── frontend/
-├── docs/
-│   ├── requirements.md
-│   ├── architecture.md
-│   ├── security.md
-│   ├── evaluation-plan.md
-│   └── deployment.md
-├── .github/
-├── .env.example
-├── docker-compose.yml
-└── README.md
+backend/app/        FastAPI app: api/, services/, policy/, agent/, tools/, domain/, models.py
+backend/migrations/ Alembic migrations
+frontend/           React app (src/), Vitest tests (src/test/), Playwright tests (e2e/)
+evaluation/         Simulated evaluation harness and committed results
+tests/              Backend unit and API/integration tests
+docs/               Requirements, architecture, security, API, evaluation, deployment, portfolio
+render.yaml         Deployment blueprint
 ```
 
-The backend, frontend, and deployment files will be introduced as their modules are implemented. This tree describes the intended structure, not the current repository contents.
+## Run it locally
+
+Requires Python 3.11, Node.js 22+, and PostgreSQL. Docker is not required.
+
+```bash
+# Backend
+python3.11 -m venv .venv && source .venv/bin/activate
+pip install -r requirements-dev.txt
+createdb review_harness && createdb review_harness_test
+cp .env.example .env
+alembic upgrade head
+uvicorn backend.app.main:app --reload            # http://127.0.0.1:8000/docs
+
+# Frontend (second terminal)
+cd frontend && npm ci && npm run dev             # http://localhost:5173
+```
+
+The default planner is the deterministic mock, so no API key is needed. Pick one of
+the example tasks on the home page to see each scenario.
+
+## Tests
+
+```bash
+pytest && ruff check . && mypy                                   # backend
+cd frontend && npm run typecheck && npm run lint && npm test     # frontend
+npx playwright install chromium && createdb review_harness_e2e
+npm run test:e2e                                                 # real browser + real backend
+```
+
+Latest local results (2026-10-29): 157 passed · ruff clean · mypy clean · 15 passed ·
+6 passed. CI runs the same commands on every push.
+
+## Evaluation in one paragraph
+
+Eight deterministic scenarios (incorrect assumption, risky deletion, missing
+information, prompt injection, execution failure, and others) ran under both workflows
+with two scripted reviewers. With an *attentive* simulated reviewer, the structured
+workflow met all 8 success criteria versus 5/8 for the baseline, and needed fewer
+decisions per task (0.75 vs 1.0). With an *approve-all* reviewer, both workflows
+executed the same two harmful actions. The unlisted shell command was blocked in every
+case, by authorization rather than by review. **This is a simulation whose reviewer
+model partly builds in the result. It is not evidence about human reviewers**; see the
+[full results and limitations](docs/evaluation-results.md).
 
 ## Documentation
 
-- [Requirements](docs/requirements.md)
-- [Architecture](docs/architecture.md)
-- [Security Design](docs/security.md)
-- [Evaluation Plan](docs/evaluation-plan.md)
-- [Deployment Plan](docs/deployment.md)
-- [API Reference](docs/api.md)
-- [Evaluation Results](docs/evaluation-results.md)
-- [Progress Tracker](docs/progress.md)
+[Requirements](docs/requirements.md) · [Architecture](docs/architecture.md) ·
+[API](docs/api.md) · [Security](docs/security.md) ·
+[Evaluation plan](docs/evaluation-plan.md) · [Evaluation results](docs/evaluation-results.md) ·
+[Deployment](docs/deployment.md) · [Progress](docs/progress.md) ·
+[Portfolio notes](docs/portfolio.md)
 
-## Development Status
+## Limitations
 
-| Module | Status |
-|---|---|
-| Project setup and design | Done |
-| Backend foundation | Done |
-| Task management API | Done |
-| Agent planning engine | Done (deterministic mock) |
-| Human review and policy engine | Done |
-| Safe execution and audit history | Done |
-| Frontend | Done (local; e2e-tested) |
-| Testing and security verification | Done |
-| LLM integration | Adapter implemented and unit-tested; no live call verified |
-| Evaluation | Done (simulation only) |
-| Deployment and CI/CD | Not started |
-| Portfolio documentation and demonstration | Not started |
+- Every tool is simulated; nothing real is changed.
+- The demo has no authentication; the reviewer name is a label.
+- The evaluation is a simulation; human understanding and review time are not measured.
+- The LLM adapter is unit-tested with a fake client; no live LLM run has been verified.
 
-## Local Development
+## Ownership
 
-Requirements: Python 3.11 and PostgreSQL (tested with PostgreSQL 18 installed through
-Homebrew; Docker is not required).
-
-```bash
-python3.11 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements-dev.txt     # or requirements.txt for runtime only
-
-createdb review_harness                 # development database
-createdb review_harness_test            # used by the test suite
-cp .env.example .env                    # adjust DATABASE_URL if needed
-
-alembic upgrade head
-uvicorn backend.app.main:app --reload
-```
-
-The API then serves `http://127.0.0.1:8000`, with interactive docs at `/docs`.
-The default planner is the deterministic mock, so no API key is needed.
-
-Dependencies are locked with pip-tools: edit `requirements.in` or `requirements-dev.in`,
-then run `pip-compile` for the matching `.txt` file.
-
-### Frontend
-
-Requires Node.js 22 or later.
-
-```bash
-cd frontend
-npm ci
-cp .env.example .env.local      # VITE_API_BASE_URL, defaults to http://localhost:8000
-npm run dev                     # http://localhost:5173
-```
-
-## Testing
-
-```bash
-pytest          # needs the review_harness_test database (override with TEST_DATABASE_URL)
-ruff check .
-mypy
-```
-
-```bash
-cd frontend
-npm run typecheck && npm run lint && npm test   # unit and component tests (Vitest)
-npx playwright install chromium                 # once
-npm run test:e2e                                # real browser + real backend + review_harness_e2e database
-```
-
-GitHub Actions runs all of these on every push (`.github/workflows/ci.yml`).
-
-The backend suite runs against real PostgreSQL. It covers lifecycle rules, risk and review
-policy, authorization (including forged-state and prompt-injection cases), tool
-execution and verification, the full review workflow in both modes, the audit trail,
-and error handling.
-
-## Security
-
-The planned design treats model-generated content as untrusted and requires backend-enforced authorization for tool execution.
-
-The initial version will use restricted mock tools rather than unrestricted shell execution.
-
-See [Security Design](docs/security.md) for trust boundaries, authorization rules, secrets handling, and known limitations.
-
-## Evaluation
-
-The project proposes a comparison between a basic approval-or-stop workflow and a structured review workflow.
-
-Potential metrics include task success, error severity, intervention count, review time, rework, and detection of incorrect assumptions.
-
-A deterministic **simulation** (scripted reviewers, 8 scenarios, 96 reproducible runs) has been completed; see [Evaluation Results](docs/evaluation-results.md). Under an attentive simulated reviewer, the structured workflow met all 8 success criteria versus 5/8 for the baseline. With a rubber-stamp reviewer the two were identical. These results demonstrate mechanism under stated assumptions; they are not evidence about human reviewers, and no human study has been conducted.
-
-See [Evaluation Plan](docs/evaluation-plan.md).
-
-## Deployment
-
-The target is a public HTTPS frontend, a deployed Python API, and persistent PostgreSQL storage.
-
-Hosting providers will be selected after checking pricing, resource limits, regional availability, and operational requirements.
-
-See [Deployment Plan](docs/deployment.md).
-
-Live URLs will be added only after deployment and smoke testing have been completed successfully.
-
-## Contributions and Project Ownership
-
-This is an independently developed portfolio project. Its purpose is to demonstrate software engineering, AI oversight, security-conscious design, testing, and reproducible evaluation.
-
-Project ownership and individual contributions will be described honestly as implementation progresses.
+Independently designed and built as a personal portfolio project by Dudekula Shameen,
+with AI pair-programming assistance (Claude Code). It is not affiliated with,
+sponsored by, or endorsed by any company or university.
 
 ## License
 
-A license has not yet been selected. Licensing will be decided before public distribution of the completed project.
+Not yet selected.

@@ -24,7 +24,9 @@ A deterministic mock agent generates a structured plan containing proposed actio
 Users can inspect assumptions, review supporting evidence, correct assumptions, and request clarification.
 
 ### FR-04: Human Review
-Users can approve or reject proposals, request clarification, and defer questions when permitted by the review policy.
+Users can approve or reject proposals, request clarification, and request revision when permitted by the review policy.
+
+*Change (2026-10-29):* "defer" was dropped; the agreed decision set is approve, reject, request clarification, and request revision.
 
 ### FR-05: Review Policy
 A transparent rule-based policy evaluates risk, reversibility, evidence, unresolved assumptions, and authorization requirements.
@@ -36,7 +38,9 @@ The system executes only allowlisted mock tools. Consequential actions require e
 The system records task changes, review decisions, tool execution attempts, execution results, and final outcomes.
 
 ### FR-08: Evaluation Dashboard
-Users can inspect task statistics, interventions, execution history, and clearly labelled evaluation results.
+Users can inspect per-task execution history and audit events in the UI. Evaluation results are delivered as a reproducible report (`docs/evaluation-results.md`, `evaluation/results/`) rather than an in-app dashboard.
+
+*Change (2026-10-29):* the in-app evaluation dashboard was replaced by the committed report; see docs/progress.md.
 
 ## 5. Initial Task States
 
