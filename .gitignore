@@ -38,3 +38,6 @@ coverage/
 .DS_Store
 .vscode/
 .idea/
+
+# Personal notes (interview prep, demo script, CV bullets): local only
+private/

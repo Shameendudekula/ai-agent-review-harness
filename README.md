@@ -66,7 +66,7 @@ backend/migrations/ Alembic migrations
 frontend/           React app (src/), Vitest tests (src/test/), Playwright tests (e2e/)
 evaluation/         Simulated evaluation harness and committed results
 tests/              Backend unit and API/integration tests
-docs/               Requirements, architecture, security, API, evaluation, deployment, portfolio
+docs/               Requirements, architecture, security, API, evaluation, deployment
 render.yaml         Deployment blueprint
 ```
 
@@ -119,8 +119,7 @@ model partly builds in the result. It is not evidence about human reviewers**; s
 [Requirements](docs/requirements.md) · [Architecture](docs/architecture.md) ·
 [API](docs/api.md) · [Security](docs/security.md) ·
 [Evaluation plan](docs/evaluation-plan.md) · [Evaluation results](docs/evaluation-results.md) ·
-[Deployment](docs/deployment.md) · [Progress](docs/progress.md) ·
-[Portfolio notes](docs/portfolio.md)
+[Deployment](docs/deployment.md) · [Progress](docs/progress.md)
 
 ## Limitations
 
