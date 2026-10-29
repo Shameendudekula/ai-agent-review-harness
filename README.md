@@ -107,7 +107,7 @@ The backend, frontend, and deployment files will be introduced as their modules 
 | Human review and policy engine | Done |
 | Safe execution and audit history | Done |
 | Frontend | Done (local; e2e-tested) |
-| Testing and security verification | In progress |
+| Testing and security verification | Done |
 | LLM integration | Adapter implemented and unit-tested; no live call verified |
 | Evaluation | Done (simulation only) |
 | Deployment and CI/CD | Not started |

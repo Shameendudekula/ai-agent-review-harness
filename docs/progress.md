@@ -13,7 +13,7 @@ were checked with the commands listed.
 | 6 | Safe execution and audit | Done | 7 allowlisted mock tools; authorization before each call; verification; append-only audit log |
 | 7 | Frontend | Done (local) | React + TS UI; 15 Vitest tests; 6 Playwright e2e tests against the real backend |
 | 8 | Database and state-machine integrity | Done (backend) | Lifecycle tests; DB CHECK constraints; append-only triggers; migration downgrade and upgrade run in tests |
-| 9 | Security and reliability | In progress | Security tests in `tests/api/test_security.py`; security.md update pending |
+| 9 | Security and reliability | Done | security.md maps each control to its tests; bundle and history secret scans clean |
 | 10 | LLM integration | Adapter done; live call not verified | Anthropic adapter tested with a fake client; no live API call has been made (no key configured) |
 | 11 | Evaluation | Done (simulation) | Pre-registered plan (`a30b066`); 96 runs, reproducible; see evaluation-results.md. No human study |
 | 12 | Deployment and CI/CD | CI done; deployment not started | GitHub Actions: backend, frontend, and e2e jobs |
@@ -35,7 +35,6 @@ alembic upgrade head        OK (also downgrade base → upgrade head)
 
 ## Known open items
 
-- `docs/security.md` and `docs/evaluation-plan.md` need updating to match the implementation.
 - A task stays in PLANNING if the process crashes while the planner runs (no recovery job).
 - The demo has no authentication: reviewer identity is a self-declared label.
 
