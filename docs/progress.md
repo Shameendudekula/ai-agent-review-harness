@@ -15,7 +15,7 @@ were checked with the commands listed.
 | 8 | Database and state-machine integrity | Done (backend) | Lifecycle tests; DB CHECK constraints; append-only triggers; migration downgrade and upgrade run in tests |
 | 9 | Security and reliability | In progress | Security tests in `tests/api/test_security.py`; security.md update pending |
 | 10 | LLM integration | Adapter done; live call not verified | Anthropic adapter tested with a fake client; no live API call has been made (no key configured) |
-| 11 | Evaluation | Not started | |
+| 11 | Evaluation | Done (simulation) | Pre-registered plan (`a30b066`); 96 runs, reproducible; see evaluation-results.md. No human study |
 | 12 | Deployment and CI/CD | CI done; deployment not started | GitHub Actions: backend, frontend, and e2e jobs |
 | 13 | Portfolio delivery | Not started | |
 

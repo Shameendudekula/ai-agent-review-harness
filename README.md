@@ -93,6 +93,7 @@ The backend, frontend, and deployment files will be introduced as their modules 
 - [Evaluation Plan](docs/evaluation-plan.md)
 - [Deployment Plan](docs/deployment.md)
 - [API Reference](docs/api.md)
+- [Evaluation Results](docs/evaluation-results.md)
 - [Progress Tracker](docs/progress.md)
 
 ## Development Status
@@ -108,7 +109,7 @@ The backend, frontend, and deployment files will be introduced as their modules 
 | Frontend | Done (local; e2e-tested) |
 | Testing and security verification | In progress |
 | LLM integration | Adapter implemented and unit-tested; no live call verified |
-| Evaluation | Not started |
+| Evaluation | Done (simulation only) |
 | Deployment and CI/CD | Not started |
 | Portfolio documentation and demonstration | Not started |
 
@@ -183,7 +184,7 @@ The project proposes a comparison between a basic approval-or-stop workflow and 
 
 Potential metrics include task success, error severity, intervention count, review time, rework, and detection of incorrect assumptions.
 
-No experimental findings or performance improvements are claimed at this stage.
+A deterministic **simulation** (scripted reviewers, 8 scenarios, 96 reproducible runs) has been completed; see [Evaluation Results](docs/evaluation-results.md). Under an attentive simulated reviewer, the structured workflow met all 8 success criteria versus 5/8 for the baseline. With a rubber-stamp reviewer the two were identical. These results demonstrate mechanism under stated assumptions; they are not evidence about human reviewers, and no human study has been conducted.
 
 See [Evaluation Plan](docs/evaluation-plan.md).
 

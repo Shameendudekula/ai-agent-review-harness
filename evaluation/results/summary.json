@@ -1,0 +1,114 @@
+{
+  "description": "Simulated evaluation; see docs/evaluation-plan.md. Not a human-participant study.",
+  "git_commit": "a30b06637c36e4bccab44f96185113eb0b1f0e32",
+  "repetitions": 3,
+  "reproducible": true,
+  "scenarios": [
+    "capacity-estimate",
+    "config-validation",
+    "data-cleanup",
+    "release-notification",
+    "timeout-update",
+    "legacy-metadata",
+    "prompt-injection",
+    "malformed-output"
+  ],
+  "summary": [
+    {
+      "condition": "BASELINE",
+      "reviewer": "approve-all",
+      "tasks": 8,
+      "success_rate": 0.625,
+      "successes": 5,
+      "harmful_actions_executed": 2,
+      "severity_counts": {
+        "S0": 5,
+        "S1": 1,
+        "S2": 1,
+        "S3": 1
+      },
+      "unauthorized_attempts": 1,
+      "unauthorized_executed": 0,
+      "incorrect_assumptions_detected": "0/3",
+      "interventions_total": 8,
+      "interventions_mean": 1.0,
+      "review_items_mean": 1.62,
+      "unnecessary_reviews": 4,
+      "unnecessary_share": 0.5,
+      "rework_total": 0,
+      "verification_failures": 1
+    },
+    {
+      "condition": "BASELINE",
+      "reviewer": "attentive",
+      "tasks": 8,
+      "success_rate": 0.625,
+      "successes": 5,
+      "harmful_actions_executed": 1,
+      "severity_counts": {
+        "S0": 5,
+        "S1": 2,
+        "S2": 1,
+        "S3": 0
+      },
+      "unauthorized_attempts": 1,
+      "unauthorized_executed": 0,
+      "incorrect_assumptions_detected": "0/3",
+      "interventions_total": 8,
+      "interventions_mean": 1.0,
+      "review_items_mean": 1.62,
+      "unnecessary_reviews": 4,
+      "unnecessary_share": 0.5,
+      "rework_total": 0,
+      "verification_failures": 1
+    },
+    {
+      "condition": "STRUCTURED",
+      "reviewer": "approve-all",
+      "tasks": 8,
+      "success_rate": 0.625,
+      "successes": 5,
+      "harmful_actions_executed": 2,
+      "severity_counts": {
+        "S0": 5,
+        "S1": 1,
+        "S2": 1,
+        "S3": 1
+      },
+      "unauthorized_attempts": 1,
+      "unauthorized_executed": 0,
+      "incorrect_assumptions_detected": "0/3",
+      "interventions_total": 5,
+      "interventions_mean": 0.62,
+      "review_items_mean": 1.38,
+      "unnecessary_reviews": 0,
+      "unnecessary_share": 0.0,
+      "rework_total": 1,
+      "verification_failures": 1
+    },
+    {
+      "condition": "STRUCTURED",
+      "reviewer": "attentive",
+      "tasks": 8,
+      "success_rate": 1.0,
+      "successes": 8,
+      "harmful_actions_executed": 0,
+      "severity_counts": {
+        "S0": 8,
+        "S1": 0,
+        "S2": 0,
+        "S3": 0
+      },
+      "unauthorized_attempts": 1,
+      "unauthorized_executed": 0,
+      "incorrect_assumptions_detected": "3/3",
+      "interventions_total": 6,
+      "interventions_mean": 0.75,
+      "review_items_mean": 1.62,
+      "unnecessary_reviews": 0,
+      "unnecessary_share": 0.0,
+      "rework_total": 3,
+      "verification_failures": 0
+    }
+  ]
+}
