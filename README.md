@@ -10,7 +10,7 @@ AI Agent Review Harness is an independent portfolio project exploring how struct
 
 The application is designed to expose agent plans, assumptions, proposed actions, review decisions, execution outcomes, and audit history.
 
-**Project status:** The backend workflow is implemented and tested locally: tasks, deterministic agent planning, risk-based review, authorization, restricted mock-tool execution, verification, and an audit trail. The frontend, evaluation, and deployment are not finished yet. See [Progress](docs/progress.md).
+**Project status:** The backend workflow is implemented and tested locally: tasks, deterministic agent planning, risk-based review, authorization, restricted mock-tool execution, verification, and an audit trail. A React frontend supports the full review workflow. Evaluation and deployment are not finished yet. See [Progress](docs/progress.md).
 
 This repository does not yet represent a completed or deployed application.
 
@@ -105,7 +105,7 @@ The backend, frontend, and deployment files will be introduced as their modules 
 | Agent planning engine | Done (deterministic mock) |
 | Human review and policy engine | Done |
 | Safe execution and audit history | Done |
-| Frontend | Not started |
+| Frontend | Done (local; e2e-tested) |
 | Testing and security verification | In progress |
 | LLM integration | Adapter implemented and unit-tested; no live call verified |
 | Evaluation | Not started |
@@ -136,6 +136,17 @@ The default planner is the deterministic mock, so no API key is needed.
 Dependencies are locked with pip-tools: edit `requirements.in` or `requirements-dev.in`,
 then run `pip-compile` for the matching `.txt` file.
 
+### Frontend
+
+Requires Node.js 22 or later.
+
+```bash
+cd frontend
+npm ci
+cp .env.example .env.local      # VITE_API_BASE_URL, defaults to http://localhost:8000
+npm run dev                     # http://localhost:5173
+```
+
 ## Testing
 
 ```bash
@@ -144,7 +155,16 @@ ruff check .
 mypy
 ```
 
-The suite runs against real PostgreSQL. It covers lifecycle rules, risk and review
+```bash
+cd frontend
+npm run typecheck && npm run lint && npm test   # unit and component tests (Vitest)
+npx playwright install chromium                 # once
+npm run test:e2e                                # real browser + real backend + review_harness_e2e database
+```
+
+GitHub Actions runs all of these on every push (`.github/workflows/ci.yml`).
+
+The backend suite runs against real PostgreSQL. It covers lifecycle rules, risk and review
 policy, authorization (including forged-state and prompt-injection cases), tool
 execution and verification, the full review workflow in both modes, the audit trail,
 and error handling.
