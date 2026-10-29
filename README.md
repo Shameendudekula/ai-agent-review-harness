@@ -10,7 +10,7 @@ AI Agent Review Harness is an independent portfolio project exploring how struct
 
 The application is designed to expose agent plans, assumptions, proposed actions, review decisions, execution outcomes, and audit history.
 
-**Project status:** Initial design and documentation.
+**Project status:** Backend foundation in progress (FastAPI app with a tested health endpoint). No workflow features are implemented yet.
 
 This repository does not yet represent a completed or deployed application.
 
@@ -97,8 +97,8 @@ The backend, frontend, and deployment files will be introduced as their modules 
 
 | Module | Status |
 |---|---|
-| Project setup and design | In progress |
-| Backend foundation | Not started |
+| Project setup and design | Done |
+| Backend foundation | In progress |
 | Task management API | Not started |
 | Agent planning engine | Not started |
 | Human review and policy engine | Not started |
@@ -112,17 +112,26 @@ The backend, frontend, and deployment files will be introduced as their modules 
 
 ## Local Development
 
-The initial implementation will use Python 3.11 and a documented virtual environment.
+Requires Python 3.11. From the repository root:
 
-Backend, frontend, and database setup commands will be added after those components exist and have been verified.
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn backend.app.main:app --reload
+```
 
-Do not assume the application can currently be started.
+The API then serves `GET http://127.0.0.1:8000/health` and interactive docs at `/docs`.
+
+Frontend and database setup will be added when those components exist.
 
 ## Testing
 
-Automated tests will be introduced alongside the implementation.
+```bash
+pytest
+```
 
-Test commands and verified test results will be documented when the test suite exists.
+The suite currently contains a single health-endpoint test.
 
 ## Security
 
