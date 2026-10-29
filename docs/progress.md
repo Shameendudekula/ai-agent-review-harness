@@ -16,8 +16,8 @@ were checked with the commands listed.
 | 9 | Security and reliability | Done | security.md maps each control to its tests; bundle and history secret scans clean |
 | 10 | LLM integration | Adapter done; live call not verified | Anthropic adapter tested with a fake client; no live API call has been made (no key configured) |
 | 11 | Evaluation | Done (simulation) | Pre-registered plan (`a30b066`); 96 runs, reproducible; see evaluation-results.md. No human study |
-| 12 | Deployment and CI/CD | CI done; deployment prepared, **blocked on account setup** | `render.yaml` + Neon plan; production start command rehearsed locally. Needs Render and Neon accounts (docs/deployment.md §3) |
-| 13 | Portfolio delivery | Done except live demo | README, portfolio.md (summary, CV bullets, demo script, interview notes), real screenshots. Live URLs pending deployment |
+| 12 | Deployment and CI/CD | Done | Live on Render + Neon; smoke test, remote Playwright 6/6, and restart persistence verified (deployment.md) |
+| 13 | Portfolio delivery | Done | README with live URLs; portfolio.md (summary, CV bullets, demo script, interview notes); real screenshots |
 
 ## Verification log
 
@@ -49,3 +49,13 @@ npm run test:e2e            6 passed (desktop Chromium + Pixel 7 viewport)
 ```
 
 Screenshots in `docs/screenshots/` are captured from the e2e run (`SCREENSHOTS=1 npm run test:e2e`).
+
+### 2026-10-29: deployment
+
+```text
+GET  /health, /health/ready (Render → Neon)   200 / database ok
+CORS preflight (frontend vs foreign origin)   allowed / refused
+Live API workflow script                      revision → execute → verified; injection blocked; 422/409 as expected
+Playwright against live site                  6 passed
+API restart → task + 31 audit events          unchanged
+```

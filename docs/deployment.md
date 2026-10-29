@@ -1,7 +1,25 @@
 # Deployment
 
-**Status: prepared, not yet deployed.** No public URL exists yet. URLs will be added
-to the README only after the smoke test in §5 passes against them.
+**Status: deployed and verified on 2026-10-29.**
+
+| | URL |
+|---|---|
+| Frontend | https://review-harness-web.onrender.com |
+| API | https://review-harness-api.onrender.com (OpenAPI docs at `/docs`) |
+
+Verification on 2026-10-29 (commits `706718c`–`cc1901c`):
+- `/health` returned 200 and `/health/ready` reported the database as reachable.
+- CORS allowed the frontend origin and refused a foreign origin.
+- The frontend returned 200, deep links worked, and the security headers were present.
+- API journeys succeeded (revision → approve → execute → verified; injection blocked;
+  forged field 422; premature execute 409).
+- The Playwright suite passed 6/6 against the live site (`playwright.remote.config.ts`).
+- After an API restart, the smoke task and its 31 audit events were unchanged.
+
+**First-deploy issue (resolved):** the first API deploy failed because `DATABASE_URL`
+in Render held the local `localhost` value. It was replaced with the Neon URL. Since
+`706718c`, the app rejects a localhost database URL at startup when
+`APP_ENV=production`.
 
 ## 1. Chosen hosting (checked 2026-10-29)
 
@@ -102,7 +120,14 @@ Then, in the browser at `$WEB`:
    reload the task page. The task and its audit trail must still be there.
 
 Record the date, commit, and results in `docs/progress.md`, then add the URLs to the
-README.
+README. The browser journeys can be rerun against the live site with:
+
+```bash
+cd frontend
+E2E_BASE_URL=https://review-harness-web.onrender.com npx playwright test -c playwright.remote.config.ts
+```
+
+This creates demo tasks in the target environment.
 
 ## 6. Monitoring and recovery
 

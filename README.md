@@ -8,10 +8,12 @@ An independent portfolio project exploring human-in-the-loop oversight of AI age
 how a structured, risk-based review workflow compares with a simple approve-or-stop
 gate, and how to keep human approval separate from backend authorization.
 
-> **Status (2026-10-29):** backend, frontend, tests, CI, and a simulated evaluation are
-> complete and verified locally and in CI. **Not yet deployed:** the hosting
-> configuration is ready, but needs account setup (see [Deployment](docs/deployment.md)).
-> No live URL exists yet.
+**Live demo:** https://review-harness-web.onrender.com · API docs: https://review-harness-api.onrender.com/docs
+
+> **Status (2026-10-29):** deployed and verified (Render + Neon, free tiers). Backend,
+> frontend, tests, CI, and a simulated evaluation are complete. The API sleeps when
+> idle, so the **first request can take about a minute**. The demo uses a
+> deterministic mock agent and simulated tools; nothing real is changed.
 
 ![Structured review of a risky action](docs/screenshots/01-structured-review.png)
 
@@ -54,7 +56,7 @@ what makes the comparison in the evaluation possible.
 | Agent | Deterministic mock planner (default); optional Anthropic adapter behind a provider-independent interface |
 | Frontend | React 19, TypeScript, Vite, Tailwind CSS, React Router |
 | Quality | pytest + HTTPX, Vitest + Testing Library, Playwright, ruff, mypy (strict), oxlint |
-| Delivery | GitHub Actions; Render + Neon deployment config (prepared) |
+| Delivery | GitHub Actions CI; deployed on Render (API + static site, Frankfurt) with Neon PostgreSQL |
 
 ## Repository layout
 
