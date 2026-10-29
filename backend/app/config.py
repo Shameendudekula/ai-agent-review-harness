@@ -5,6 +5,7 @@ from typing import Literal
 
 from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from sqlalchemy.engine import make_url
 
 
 class Settings(BaseSettings):
@@ -45,6 +46,17 @@ class Settings(BaseSettings):
         if not value.startswith("postgresql+psycopg://"):
             raise ValueError("DATABASE_URL must be a PostgreSQL connection URL")
         return value
+
+    @model_validator(mode="after")
+    def reject_local_database_in_production(self) -> "Settings":
+        # A common deployment mistake is copying the local .env value into the host's settings.
+        host = make_url(self.database_url).host
+        if self.app_env == "production" and host in (None, "", "localhost", "127.0.0.1", "::1"):
+            raise ValueError(
+                "DATABASE_URL points to a local database, but APP_ENV is production; "
+                "set it to the managed database's connection URL"
+            )
+        return self
 
     @model_validator(mode="after")
     def require_llm_key_when_enabled(self) -> "Settings":

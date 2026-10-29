@@ -195,3 +195,15 @@ def test_llm_planner_requires_api_key(monkeypatch) -> None:
 def test_api_key_is_not_exposed_in_repr() -> None:
     settings = Settings(_env_file=None, database_url="postgresql://h/db", anthropic_api_key="sk-secret-value")
     assert "sk-secret-value" not in repr(settings)
+
+
+@pytest.mark.parametrize("url", ["postgresql://localhost/db", "postgresql://127.0.0.1:5432/db", "postgresql:///db"])
+def test_production_rejects_local_database(url) -> None:
+    with pytest.raises(ValidationError, match="local database"):
+        Settings(_env_file=None, app_env="production", database_url=url)
+
+
+def test_production_accepts_managed_database() -> None:
+    settings = Settings(_env_file=None, app_env="production",
+                        database_url="postgresql://user:pw@ep-x.eu-central-1.aws.neon.tech/db?sslmode=require")
+    assert settings.database_url.startswith("postgresql+psycopg://")
